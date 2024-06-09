@@ -1,4 +1,5 @@
-// Déclaration de la variable globale pour Masonry
+// Declaration of the global variable for Masonry
+
 var msnry;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -58,17 +59,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Gestionnaire pour dérouler/enrouler les sous-dossiers
+// Handler for expanding/collapsing subfolders
 function toggleFolderDisplay(folderTitle, folderContent) {
     const isVisible = folderContent.style.display === 'none';
     folderContent.style.display = isVisible ? 'block' : 'none';
     folderTitle.querySelector('.folder-toggle').classList.toggle('folder-open', isVisible);
     
-    // Mettre à jour la disposition de Masonry après un court délai
-    setTimeout(updateMasonryLayout, 50); // Un petit délai pour laisser le DOM se rafraîchir
+    // Update Masonry layout after a short delay
+    setTimeout(updateMasonryLayout, 50); 
 }
 
-// Fonction pour déclencher un recalcul de la disposition de Masonry
+// Function to trigger a re-layout of Masonry
 function updateMasonryLayout() {
     if (msnry) {
         msnry.layout();
@@ -77,7 +78,7 @@ function updateMasonryLayout() {
 
 // Initializes the theme based on saved preference
 function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark'; // 'dark' est le mode par défaut
+    const savedTheme = localStorage.getItem('theme') || 'dark'; // 'dark' is the default mode
     if (savedTheme === 'dark') {
         activateDarkMode();
     } else {
