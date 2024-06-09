@@ -31,9 +31,27 @@ This Chrome extension offers a sleek and dynamic way to manage your bookmarks, f
 ## Customization
 - Modify the style.css to alter the appearance according to your preference.
 - Edit newtab.js to add or modify functionalities.
-  
-## Contributing
-Contributions are welcome! Please fork the repository and open a pull request with your improvements.
+
+## Contributions
+
+We welcome contributions from everyone! 
+For detailed instructions on how to contribute to EcoFavsManager, including coding standards, pull request guidelines, 
+and how to set up your development environment, please see our [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+If you're interested in helping, especially with the CSP issue mentioned below, your expertise would be greatly appreciated!
+
+### Help Wanted
+
+We are currently seeking help with specific issues, including a Content Security Policy (CSP) error that prevents inline scripts from executing. 
+The exact error is:
+> Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present.
+
+If you have experience with CSP or web security, your insights and contributions to resolve this would be greatly appreciated!
+
+### Reporting Issues
+
+If you encounter any bugs or have suggestions for improvements, please file an issue through the GitHub issue tracker. 
+Be sure to include detailed information about the issue and steps to reproduce it.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE.md file for details.
