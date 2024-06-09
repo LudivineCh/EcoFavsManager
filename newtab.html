@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookmark Manager</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+</head>
+<body>
+    <header>
+        <!-- Lilo search form -->
+        <form action="https://search.lilo.org/results.php" method="GET">
+            <input type="text" id="searchInputLilo" name="q" placeholder="Search on Lilo...">
+            <input type="image" src="icons/icons48-lilo-logo.png" alt="Lilo Search"> <!-- Assurez-vous que l'icône Lilo existe dans vos ressources -->
+        </form>
+        <!-- Ecosia search form -->
+        <form action="https://www.ecosia.org/search" method="GET">
+            <input type="text" id="searchInputEcosia" name="q" placeholder="Search on Ecosia...">
+            <input type="image" src="icons/icons8-arbre-48.png" alt="Ecosia Search">
+        </form>
+    </header>
+    
+    <main>
+        <!-- The container for your bookmarks will be filled by JavaScript -->
+        <section id="bookmarksSection" class="encarts-container">
+            <div id="bookmarksContainer"></div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Theme switchers -->
+        <button id="toggleThemeButton">Dark Mode</button>
+        <p>EcoFavsManager: Streamline your browsing with our eco-conscious bookmark manager. It's completely free, fully customizable, and open source. Explore and contribute to the source code on GitHub to make your browsing experience greener and more efficient.</p>
+    </footer>
+    <script src="lib/masonry.pkgd.min.js"></script>
+    <!-- Including your JavaScript script that will manage the display of bookmarks -->
+    <script src="js/newtab.js"></script>
+</body>
+</html>

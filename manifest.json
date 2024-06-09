@@ -1,0 +1,29 @@
+{
+    "name": "EcoFavsManager",
+    "version": "1.0.0",
+    "description": "EcoFavsManager organizes your bookmarks into neat panels, featuring integrated search functionalities with Lilo and Ecosia for eco-friendly web browsing.",
+    "manifest_version": 3,
+    "icons": {
+      "16": "img/icon16.png",
+      "48": "img/icon48.png",
+      "128": "img/icon128.png"
+    },
+    "action": {
+      "default_icon": {
+        "16": "img/icon16.png",
+        "48": "img/icon48.png",
+        "128": "img/icon128.png"
+      }
+    },
+    "chrome_url_overrides": {
+      "newtab": "newtab.html"
+    },
+    "permissions": [
+      "bookmarks",
+      "tabs"
+    ],
+    "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' https://icon.horse/icon/*"
+    }
+  }
+  
