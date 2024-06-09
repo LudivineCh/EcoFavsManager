@@ -1,6 +1,8 @@
 # EcoFavsManager
 A Chrome extension for managing bookmarks with integrated search bars for Lilo and Ecosia, featuring dynamic icons and a layout optimized by Masonry.
 
+This project was born from the idea of migrating the Bookolio extension, originally designed with Manifest V2, to Manifest V3. During the process, it was simplified and tailored to my preferences, now fully upgraded to V3.
+
 # Custom Bookmark Manager
 
 This Chrome extension offers a sleek and dynamic way to manage your bookmarks, featuring integrated search functionalities with Lilo and Ecosia for eco-conscious web browsing.
