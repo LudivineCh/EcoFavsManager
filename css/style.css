@@ -14,12 +14,16 @@ header {
 }
 
 footer {
-    width: 100%; /* Ensures the footer extends the full width of the viewport */
-    padding: 20px; /* Adds padding inside the footer for spacing */
-    position: bottom; /* Intended to fix the footer to the bottom of the page - note that 'position: bottom;' is not standard CSS */
-    bottom: 0; /* Aligns the footer at the bottom of its container */
-    left: 0; /* Aligns the footer to the left of its container */
-    text-align: left; /* Aligns the text and button inside the footer to the left */
+    width: 98%;
+    margin: 20px auto 0 auto; 
+    padding: 5px;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
+    color: #000000; /* Black text */
+    border-radius: 20px; /* 20px rounded corners */
+    font-size: 14px; /* Larger text size */
 }
 
 
