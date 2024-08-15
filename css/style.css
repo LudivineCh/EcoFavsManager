@@ -3,10 +3,10 @@ body {
     color: #0a0a0a; /* Text color for better readability */
     margin: 0;
     padding: 20px;
-    background-image: url('img/univers.webp'); /* Remplacez 'votre-image.jpg' par le chemin de votre image */
-    background-size: cover; /* Cette propriété ajuste l'image pour qu'elle couvre l'ensemble de l'arrière-plan */
-    background-position: center; /* Centre l'image dans l'arrière-plan */
-    background-repeat: no-repeat; /* Empêche la répétition de l'image */
+    background-image: url('img/universe.png'); /* Replace 'your-image.jpg' with the path to your image */
+    background-size: cover; /* This property adjusts the image so that it covers the entire background */
+    background-position: center; /* Centers the image in the background */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
 }
 
 header {
