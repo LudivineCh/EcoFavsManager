@@ -1,12 +1,12 @@
 body {
     font-family: 'Arial', sans-serif;
-    color: #0a0a0a; /* Text color for better readability */
+    color: #0a0a0a;
     margin: 0;
     padding: 20px;
-    background-image: url('img/universe.png'); /* Replace 'your-image.jpg' with the path to your image */
-    background-size: cover; /* This property adjusts the image so that it covers the entire background */
-    background-position: center; /* Centers the image in the background */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-image: url('../img/univers.png');
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
 }
 
 header {
@@ -18,24 +18,15 @@ header {
 }
 
 footer {
-    width: 100%; /* Ensures the footer extends the full width of the viewport */
-    padding: 20px; /* Adds padding inside the footer for spacing */
-    position: bottom; /* Intended to fix the footer to the bottom of the page - note that 'position: bottom;' is not standard CSS */
-    bottom: 0; /* Aligns the footer at the bottom of its container */
-    left: 0; /* Aligns the footer to the left of its container */
-    text-align: left; /* Aligns the text and button inside the footer to the left */
-}
-
-
-/* Add specific styles for light and dark themes as necessary */
-.light-mode footer {
-    background-color: #e6e6e6; /* Light background for the light mode */
-    color: #000; /* Dark text for better readability in light mode */
-}
-
-.dark-mode footer {
-    background-color: #303030; /* Dark background for the dark mode */
-    color: #fff; /* Light text color for better readability in dark mode */
+    width: 98%;
+    padding: 5px;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.5); /* Couleur blanche semi-transparente */
+    color: #000000; /* Texte noir */
+    border-radius: 20px; /* Coins arrondis de 15px */
+    font-size: 14px; /* Taille du texte plus grande */
 }
 
 form {
@@ -52,15 +43,6 @@ input[type="text"] {
     border: 1px solid #ddd; /* Subtle border for a refined look */
 }
 
-/*Dark-mode & light-mode button*/
-button {
-    padding: 8px 16px;
-    border-radius: 20px; /* Rounded corners for the button */
-    border: none; /* No border for the button to make it look seamless */
-    cursor: pointer; /* Changes the cursor to signify button interactivity */
-    background-color: #4CAF50; /* Background color for the button */
-    color: white; /* Text color for the button */
-}
 
 /*Search bar*/
 #searchInput {
@@ -242,33 +224,7 @@ li {
     transform: scaleY(-1);
 }
 
-/* Light Mode */
-.light-mode {
-    background-color: #e6e6e6; /* Background color */
-    color: #000000; /* Text color */
-}
 
-/* Styles for boxes in light mode */
-.light-mode .encart {
-    background-color: #ffffff; /* Box background color */
-}
-
-/* Dark Mode */
-.dark-mode {
-    background-color: #303030; /* Medium gray for background */
-    color: #000000; /* Light yellow for text */
-}
-
-/* Styles for boxes in dark mode */
-.dark-mode .encart {
-    background-color: #ece9e9; /* Dark gray for boxes */
-}
-
-/* Styles for the theme toggle button */
-#toggleThemeButton {
-    margin: 10px; /* Example to add margin around the button */
-    padding: 5px 10px; /* Example to adjust internal padding of the button */
-}
 
 /* Screens around 14 inches to 17 inches (e.g., HD and Full HD resolutions) */
 @media (min-width: 1280px) {

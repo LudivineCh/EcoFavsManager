@@ -3,9 +3,6 @@
 var msnry;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the theme based on user preference or default to dark mode
-    initializeTheme();
-
     // Build the bookmarks structure from Chrome's bookmark tree
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
         let bookmarksHtml = '';
@@ -50,14 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleFolderDisplay(folderTitle, folderContent);
         }
     });
-
-    // Function to toggle the display of folders
-    const toggleThemeButton = document.getElementById('toggleThemeButton');
-    if (toggleThemeButton) {
-        toggleThemeButton.addEventListener('click', toggleTheme);
-    }
 });
-
 
 // Handler for expanding/collapsing subfolders
 function toggleFolderDisplay(folderTitle, folderContent) {
@@ -73,53 +63,6 @@ function toggleFolderDisplay(folderTitle, folderContent) {
 function updateMasonryLayout() {
     if (msnry) {
         msnry.layout();
-    }
-}
-
-// Initializes the theme based on saved preference
-function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark'; // 'dark' is the default mode
-    if (savedTheme === 'dark') {
-        activateDarkMode();
-    } else {
-        activateLightMode();
-    }
-    updateButtonText();
-}
-
-// Activates the light theme
-function activateLightMode() {
-    document.body.classList.add('light-mode');
-    document.body.classList.remove('dark-mode');
-    localStorage.setItem('theme', 'light');
-    updateButtonText();
-}
-
-// Activates the dark theme
-function activateDarkMode() {
-    document.body.classList.add('dark-mode');
-    document.body.classList.remove('light-mode');
-    localStorage.setItem('theme', 'dark');
-    updateButtonText();
-}
-
-// Toggles the theme between light and dark
-function toggleTheme() {
-    if (document.body.classList.contains('dark-mode')) {
-        activateLightMode();
-    } else {
-        activateDarkMode();
-    }
-}
-
-// Updates the text of the theme toggle button based on the current theme
-function updateButtonText() {
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    const toggleThemeButton = document.getElementById('toggleThemeButton');
-    if (currentTheme === 'dark') {
-        toggleThemeButton.textContent = 'Light Mode';
-    } else {
-        toggleThemeButton.textContent = 'Dark Mode';
     }
 }
 
@@ -151,9 +94,6 @@ function createFaviconHtml(node) {
     const domain = urlObj.hostname.replace(/^www\./, '');
     let faviconUrl;
     
-    // Uncomment to display the extracted domain in the console
-    //console.log('Domain extracted:', domain);
-
     // Determining the favicon URL based on the domain
     switch (domain) {
         case 'cse-corsicasole.com':
@@ -169,8 +109,6 @@ function createFaviconHtml(node) {
             faviconUrl = 'icons/favicons/zeendoc.ico';
             break;
         case 'docs.google.com':
-            // Uncomment to display the extracted pathname in the console
-            // console.log('Pathname extracted:', urlObj.pathname); // Affiche le chemin extrait
             if (urlObj.pathname.startsWith('/document')) {
                 faviconUrl = 'icons/favicons/google-docs.png';
             } else if (urlObj.pathname.startsWith('/spreadsheets')) {
