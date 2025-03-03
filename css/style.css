@@ -195,6 +195,8 @@ li {
 
 /* Styles for the toggle folder */
 .toggle-folder {
+    cursor: pointer; /* Changes cursor to indicate it's clickable */
+    user-select: none; /* Prevents text selection to improve user experience */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -220,13 +222,13 @@ li {
 }
 
 /* Styles for folder toggles */
-
 .folder-toggle {
+    cursor: pointer;
     flex-shrink: 0; /* The arrow does not shrink */
     display: inline-block;
     margin-left: auto; /* Force la flèche à l'extrême droite */
     /*color: #eec549; /* Yellow color for the toggle arrow */
-    color: #f7d100; /* nice yellow
+    color: #f7d100; /* nice yellow*/
 }
 
 /* Styles for open folders */
