@@ -66,9 +66,18 @@ input[type="text"] {
 
 /* Styles for the bookmarks container */
 #bookmarksContainer {
-    margin: 0 auto;  /* Center the container */
-    padding: 10px; /* Inner space around the Masonry grid items */
+    display: flex;
+    align-items: flex-start;
+    width: 90%;
+    box-sizing: border-box;
+    padding-left: 15px;  /* Ajouter un padding identique à gauche */
+    padding-right: 15px; /* Maintenir le padding à droite */
+    overflow-x: hidden;
+    justify-content: center; /* Centre le contenu horizontalement */
+    max-width: 22git 00px; 
+    margin: 0 auto; /* Centre le conteneur lui-même */
 }
+
 
 /* Styles for individual bookmark boxes */
 .encart {
@@ -268,5 +277,8 @@ li {
 @media (min-width: 2560px) {
     #bookmarksSection {
         padding-top: 50px;
+    }
+    #bookmarksContainer {
+        width: 70%;
     }
 }
