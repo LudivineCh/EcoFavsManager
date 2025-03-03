@@ -1,9 +1,16 @@
 body {
     font-family: 'Arial', sans-serif;
-    color: #0a0a0a; /* Text color for better readability */
+    color: #0a0a0a;
     margin: 0;
     padding: 20px;
+    /*background-color: #f4f4f4;  /* Light grey*/
+    background-color: #2e2e2e; /* Dark grey*/
+    /*background-image: url('../img/univers.png');*/
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
 }
+
 
 header {
     display: flex; /* Enables Flexbox layout for child elements */
@@ -26,18 +33,6 @@ footer {
     font-size: 14px; /* Larger text size */
 }
 
-
-/* Add specific styles for light and dark themes as necessary */
-.light-mode footer {
-    background-color: #e6e6e6; /* Light background for the light mode */
-    color: #000; /* Dark text for better readability in light mode */
-}
-
-.dark-mode footer {
-    background-color: #303030; /* Dark background for the dark mode */
-    color: #fff; /* Light text color for better readability in dark mode */
-}
-
 form {
     display: flex; /* Activates Flexbox layout to align the input field and button */
     align-items: center; /* Vertically centers the elements within the form */
@@ -52,15 +47,6 @@ input[type="text"] {
     border: 1px solid #ddd; /* Subtle border for a refined look */
 }
 
-/*Dark-mode & light-mode button*/
-button {
-    padding: 8px 16px;
-    border-radius: 20px; /* Rounded corners for the button */
-    border: none; /* No border for the button to make it look seamless */
-    cursor: pointer; /* Changes the cursor to signify button interactivity */
-    background-color: #4CAF50; /* Background color for the button */
-    color: white; /* Text color for the button */
-}
 
 /*Search bar*/
 #searchInput {
@@ -107,6 +93,10 @@ button {
     margin: 0 0 10px 0;
     padding-bottom: 5px;
     border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 /* Styles for links inside bookmark boxes */
@@ -185,11 +175,12 @@ li {
 
 /* Styles for folder titles */
 .folder-title {
-    font-weight: bold; /* Makes the text bolder */
-    margin-top: 10px; /* Adds some space above folder titles */
-    margin-bottom: 5px; /* Adds some space below folder titles */
-    display: flex; /* Uses Flexbox to align the icon and text */
-    align-items: center; /* Centers the icon and text vertically */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pousse la flèche à droite */
+    padding-right: 5px; /* Espace pour la flèche */
+    box-sizing: border-box;
+    width: 100%;
 }
 
 /* Styles for images inside folder titles */
@@ -204,8 +195,11 @@ li {
 
 /* Styles for the toggle folder */
 .toggle-folder {
-    cursor: pointer; /* Changes cursor to indicate it's clickable */
-    user-select: none; /* Prevents text selection to improve user experience */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1; /* Prend tout l'espace disponible */
+    margin-right: 5px; /* Espace entre le texte et la flèche */
 }
 
 /* Styles for the content inside folders */
@@ -216,7 +210,8 @@ li {
 
 /* Styles for the collapsible folder icon (add your own icon if necessary) */
 .folder-icon {
-    transition: transform 0.3s; /* Animation for icon rotation */
+    flex-shrink: 0; /* The icon does not shrink */
+    margin-right: 5px;
 }
 
 /* When folder is open, rotate the icon */
@@ -225,11 +220,13 @@ li {
 }
 
 /* Styles for folder toggles */
+
 .folder-toggle {
-    cursor: pointer;
-    user-select: none;
-    padding-left: 5px;
-    color: #eec549; /* Yellow color for the toggle arrow */
+    flex-shrink: 0; /* The arrow does not shrink */
+    display: inline-block;
+    margin-left: auto; /* Force la flèche à l'extrême droite */
+    /*color: #eec549; /* Yellow color for the toggle arrow */
+    color: #f7d100; /* nice yellow
 }
 
 /* Styles for open folders */
@@ -242,33 +239,7 @@ li {
     transform: scaleY(-1);
 }
 
-/* Light Mode */
-.light-mode {
-    background-color: #e6e6e6; /* Background color */
-    color: #000000; /* Text color */
-}
 
-/* Styles for boxes in light mode */
-.light-mode .encart {
-    background-color: #ffffff; /* Box background color */
-}
-
-/* Dark Mode */
-.dark-mode {
-    background-color: #303030; /* Medium gray for background */
-    color: #000000; /* Light yellow for text */
-}
-
-/* Styles for boxes in dark mode */
-.dark-mode .encart {
-    background-color: #ece9e9; /* Dark gray for boxes */
-}
-
-/* Styles for the theme toggle button */
-#toggleThemeButton {
-    margin: 10px; /* Example to add margin around the button */
-    padding: 5px 10px; /* Example to adjust internal padding of the button */
-}
 
 /* Screens around 14 inches to 17 inches (e.g., HD and Full HD resolutions) */
 @media (min-width: 1280px) {

@@ -1,11 +1,6 @@
-// Declaration of the global variable for Masonry
-
 var msnry;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the theme based on user preference or default to dark mode
-    initializeTheme();
-
     // Build the bookmarks structure from Chrome's bookmark tree
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
         let bookmarksHtml = '';
@@ -22,24 +17,130 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         barreDeFavorisLinksHtml += barreDeFavorisLinksHtml === '<ul>' ? '' : '</ul>';
-        bookmarksHtml = barreDeFavorisLinksHtml !== '<ul></ul>' ? `<div class="encart"><h2>Barre de Favoris</h2>${barreDeFavorisLinksHtml}</div>` + bookmarksHtml : bookmarksHtml;
-
-        // Adding other favorites
-        if (autresFavoris.children.length > 0) {
-            bookmarksHtml += `<div class="encart">${createBookmarksHtml(autresFavoris.children, 'Autres Favoris')}</div>`;
-        }
-
-        // Inserting the bookmarks HTML into the page
-        document.getElementById('bookmarksContainer').innerHTML = bookmarksHtml;
         
-        // Initialisez Masonry une fois que les signets ont été insérés dans le DOM
-        msnry = new Masonry('#bookmarksContainer', {
-            itemSelector: '.encart', // Sélecteur pour les éléments de la grille
-            columnWidth: 200, // La largeur des colonnes
-            gutter: 15,
-            horizontalOrder: true,
-            fitWidth: true // Centre la grille dans le conteneur parent
-        });
+        // Créer les encarts spéciaux
+        let barreDeFavorisHtml = barreDeFavorisLinksHtml !== '<ul></ul>' ? 
+            `<div class="encart barre-favoris"><h2>Barre de Favoris</h2>${barreDeFavorisLinksHtml}</div>` : '';
+        
+        let autresFavorisHtml = '';
+        if (autresFavoris.children.length > 0) {
+            autresFavorisHtml = `<div class="encart autres-favoris">${createBookmarksHtml(autresFavoris.children, 'Autres Favoris')}</div>`;
+        }
+        
+        // Ajouter CSS pour notre nouvelle structure avec responsive design
+        const css = `
+            <style>
+                #bookmarksContainer {
+                    display: flex;
+                    align-items: flex-start;
+                    width: 100%;
+                    box-sizing: border-box;
+                    padding-right: 15px; /* Pour éviter que le contenu aille jusqu'au bord */
+                    overflow-x: hidden; /* Empêcher le défilement horizontal */
+                }
+                
+                #specialContainer {
+                    display: flex;
+                    flex-direction: column;
+                    margin-right: 15px;
+                    flex-shrink: 0; /* Empêcher le conteneur spécial de rétrécir */
+                    width: auto; /* Largeur basée sur le contenu */
+                }
+                
+                #masonryContainer {
+                    flex: 1;
+                    box-sizing: border-box;
+                }
+                
+                /* Assurer que les encarts ne dépassent pas de leur conteneur */
+                .encart {
+                    max-width: 100%;
+                    box-sizing: border-box;
+                }
+                
+                /* Ajustements responsives */
+                @media (max-width: 1200px) {
+                    #masonryContainer .encart {
+                        width: 180px; /* Réduit légèrement la largeur des encarts */
+                    }
+                }
+                
+                @media (max-width: 992px) {
+                    #masonryContainer .encart {
+                        width: 160px; /* Réduit davantage pour les écrans plus petits */
+                    }
+                }
+            </style>
+        `;
+        
+        // Insérer le CSS dans la page
+        document.head.insertAdjacentHTML('beforeend', css);
+        
+        // Restructurer complètement notre conteneur principal
+        const container = document.getElementById('bookmarksContainer');
+        container.innerHTML = '';
+        
+        // Créer deux conteneurs distincts
+        const specialContainer = document.createElement('div');
+        specialContainer.id = 'specialContainer';
+        
+        const masonryContainer = document.createElement('div');
+        masonryContainer.id = 'masonryContainer';
+        
+        // Ajouter ces conteneurs au conteneur principal
+        container.appendChild(specialContainer);
+        container.appendChild(masonryContainer);
+        
+        // Ajouter les encarts spéciaux dans leur conteneur
+        specialContainer.innerHTML = barreDeFavorisHtml + autresFavorisHtml;
+        
+        // Ajouter tous les autres encarts dans le conteneur Masonry
+        masonryContainer.innerHTML = bookmarksHtml;
+        
+        // Initialiser Masonry avec des options améliorées
+        setTimeout(function() {
+            // Calculer le nombre optimal de colonnes en fonction de l'espace disponible
+            function calculateOptimalColumnWidth() {
+                const containerWidth = masonryContainer.clientWidth;
+                const minColumnWidth = 200; // Largeur minimale souhaitée pour une colonne
+                const maxColumns = Math.floor(containerWidth / minColumnWidth);
+                
+                // S'il y a de l'espace pour au moins 1 colonne
+                if (maxColumns >= 1) {
+                    // Distribuer l'espace disponible uniformément
+                    return Math.floor(containerWidth / maxColumns) - 15; // Soustraire l'espace de gouttière
+                }
+                
+                return minColumnWidth; // Fallback à la largeur minimale
+            }
+            
+            // Initialiser Masonry avec une largeur de colonne calculée
+            const optimalColumnWidth = calculateOptimalColumnWidth();
+            
+            msnry = new Masonry('#masonryContainer', {
+                itemSelector: '.encart',
+                columnWidth: optimalColumnWidth,
+                gutter: 15,
+                fitWidth: false, // Ne pas utiliser fitWidth car nous voulons occuper tout l'espace
+                percentPosition: true, // Utiliser un positionnement relatif pour une meilleure adaptation
+                horizontalOrder: true, // Pour que les éléments soient organisés de gauche à droite
+                transitionDuration: '0.2s' // Animation douce lors du réarrangement
+            });
+            
+            // Recalculer le layout lors du redimensionnement de la fenêtre
+            window.addEventListener('resize', function() {
+                if (msnry) {
+                    // Re-calculer la largeur optimale de colonne
+                    const newOptimalWidth = calculateOptimalColumnWidth();
+                    
+                    // Mettre à jour les options de Masonry
+                    msnry.options.columnWidth = newOptimalWidth;
+                    
+                    // Recharger le layout
+                    msnry.layout();
+                }
+            });
+        }, 100);
     });
 
     // Click handler to show/hide sub-folders
@@ -50,14 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleFolderDisplay(folderTitle, folderContent);
         }
     });
-
-    // Function to toggle the display of folders
-    const toggleThemeButton = document.getElementById('toggleThemeButton');
-    if (toggleThemeButton) {
-        toggleThemeButton.addEventListener('click', toggleTheme);
-    }
 });
-
 
 // Handler for expanding/collapsing subfolders
 function toggleFolderDisplay(folderTitle, folderContent) {
@@ -73,53 +167,6 @@ function toggleFolderDisplay(folderTitle, folderContent) {
 function updateMasonryLayout() {
     if (msnry) {
         msnry.layout();
-    }
-}
-
-// Initializes the theme based on saved preference
-function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark'; // 'dark' is the default mode
-    if (savedTheme === 'dark') {
-        activateDarkMode();
-    } else {
-        activateLightMode();
-    }
-    updateButtonText();
-}
-
-// Activates the light theme
-function activateLightMode() {
-    document.body.classList.add('light-mode');
-    document.body.classList.remove('dark-mode');
-    localStorage.setItem('theme', 'light');
-    updateButtonText();
-}
-
-// Activates the dark theme
-function activateDarkMode() {
-    document.body.classList.add('dark-mode');
-    document.body.classList.remove('light-mode');
-    localStorage.setItem('theme', 'dark');
-    updateButtonText();
-}
-
-// Toggles the theme between light and dark
-function toggleTheme() {
-    if (document.body.classList.contains('dark-mode')) {
-        activateLightMode();
-    } else {
-        activateDarkMode();
-    }
-}
-
-// Updates the text of the theme toggle button based on the current theme
-function updateButtonText() {
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    const toggleThemeButton = document.getElementById('toggleThemeButton');
-    if (currentTheme === 'dark') {
-        toggleThemeButton.textContent = 'Light Mode';
-    } else {
-        toggleThemeButton.textContent = 'Dark Mode';
     }
 }
 
@@ -151,9 +198,6 @@ function createFaviconHtml(node) {
     const domain = urlObj.hostname.replace(/^www\./, '');
     let faviconUrl;
     
-    // Uncomment to display the extracted domain in the console
-    //console.log('Domain extracted:', domain);
-
     // Determining the favicon URL based on the domain
     switch (domain) {
         case 'cse-corsicasole.com':
@@ -169,8 +213,6 @@ function createFaviconHtml(node) {
             faviconUrl = 'icons/favicons/zeendoc.ico';
             break;
         case 'docs.google.com':
-            // Uncomment to display the extracted pathname in the console
-            // console.log('Pathname extracted:', urlObj.pathname); // Affiche le chemin extrait
             if (urlObj.pathname.startsWith('/document')) {
                 faviconUrl = 'icons/favicons/google-docs.png';
             } else if (urlObj.pathname.startsWith('/spreadsheets')) {
