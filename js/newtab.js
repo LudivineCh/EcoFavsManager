@@ -193,46 +193,65 @@ function createBookmarksHtml(bookmarkNodes, title = '') {
 }
 
 // Generates favicon HTML for a bookmark node
+// Generates favicon HTML for a bookmark node
 function createFaviconHtml(node) {
-    const urlObj = new URL(node.url);
-    const domain = urlObj.hostname.replace(/^www\./, '');
-    let faviconUrl;
+    if (!node.url) return `<li>⚠️ <span class="bookmark-title">${node.title || "Sans titre"}</span></li>`;
     
-    // Determining the favicon URL based on the domain
-    switch (domain) {
-        case 'cse-corsicasole.com':
-            faviconUrl = 'icons/favicons/cse.ico';
-            break;
-        case 'wrike.com':
-            faviconUrl = 'icons/favicons/wrike.png';
-            break;
-        case 'app.monportailrh.com':
-            faviconUrl = 'icons/favicons/peoplesphere.png';
-            break;
-        case 'armoires.zeendoc.com':
-            faviconUrl = 'icons/favicons/zeendoc.ico';
-            break;
-        case 'docs.google.com':
-            if (urlObj.pathname.startsWith('/document')) {
-                faviconUrl = 'icons/favicons/google-docs.png';
-            } else if (urlObj.pathname.startsWith('/spreadsheets')) {
-                faviconUrl = 'icons/favicons/google-sheets.png';
-            } else if (urlObj.pathname.startsWith('/presentation')) {
-                faviconUrl = 'icons/favicons/google-slides.png';
-            } else {
-                faviconUrl = 'icons/favicons/google-drive.png';
-            }
-            break;
-        default:
-            faviconUrl = `https://icon.horse/icon/${domain}`;
+    try {
+        const urlObj = new URL(node.url);
+        const domain = urlObj.hostname.replace(/^www\./, '');
+        let faviconUrl;
+        let fallbackUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+        
+        // Determining the favicon URL based on the domain
+        switch (domain) {
+            case 'cse-corsicasole.com':
+                faviconUrl = 'icons/favicons/cse.ico';
+                break;
+            case 'wrike.com':
+                faviconUrl = 'icons/favicons/wrike.png';
+                break;
+            case 'app.monportailrh.com':
+                faviconUrl = 'icons/favicons/peoplesphere.png';
+                break;
+            case 'armoires.zeendoc.com':
+                faviconUrl = 'icons/favicons/zeendoc.ico';
+                break;
+            case 'docs.google.com':
+                if (urlObj.pathname.startsWith('/document')) {
+                    faviconUrl = 'icons/favicons/google-docs.png';
+                } else if (urlObj.pathname.startsWith('/spreadsheets')) {
+                    faviconUrl = 'icons/favicons/google-sheets.png';
+                } else if (urlObj.pathname.startsWith('/presentation')) {
+                    faviconUrl = 'icons/favicons/google-slides.png';
+                } else {
+                    faviconUrl = 'icons/favicons/google-drive.png';
+                }
+                break;
+            default:
+                // Pour les autres sites, utiliser directement le service Google S2
+                faviconUrl = fallbackUrl;
+        }
+
+        // Formatting the title for display
+        const formattedTitle = formatTitle(node.title, node.url);
+
+        // Creating the HTML element for the favicon with the formatted title
+        // Si c'est une URL personnalisée, ajouter une gestion d'erreur, sinon utiliser directement Google S2
+        if (faviconUrl !== fallbackUrl) {
+            return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
+                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" 
+                onerror="this.src='${fallbackUrl}'">
+                <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
+        } else {
+            return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
+                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
+                <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
+        }
+    } catch (error) {
+        console.error("Error processing bookmark URL:", node.url, error);
+        return `<li>🔗 <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${node.title || node.url}</a></li>`;
     }
-
-    // Formatting the title for display and full use in the link's 'title' attribute
-    const formattedTitle = formatTitle(node.title, node.url);
-
-    // Creating the HTML element for the favicon with the formatted title
-    return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" onerror="this.src='https://icon.horse/icon/${domain}'">` +
-           `<a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
 }
 
 // Formats the title of a bookmark for display
