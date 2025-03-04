@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         barreDeFavorisLinksHtml += barreDeFavorisLinksHtml === '<ul>' ? '' : '</ul>';
         
-        // Créer les encarts spéciaux
+        // Create special sections
         let barreDeFavorisHtml = barreDeFavorisLinksHtml !== '<ul></ul>' ? 
             `<div class="encart barre-favoris"><h2>Barre de Favoris</h2>${barreDeFavorisLinksHtml}</div>` : '';
         
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             autresFavorisHtml = `<div class="encart autres-favoris">${createBookmarksHtml(autresFavoris.children, 'Autres Favoris')}</div>`;
         }
         
-        // Ajouter CSS pour notre nouvelle structure avec responsive design
+        // Add CSS for our new structure with responsive design
         const css = `
             <style>
                 #bookmarksContainer {
@@ -35,16 +35,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     align-items: flex-start;
                     width: 100%;
                     box-sizing: border-box;
-                    padding-right: 15px; /* Pour éviter que le contenu aille jusqu'au bord */
-                    overflow-x: hidden; /* Empêcher le défilement horizontal */
+                    padding-right: 15px; /* To prevent content from going to the edge */
+                    overflow-x: hidden; /* Prevent horizontal scrolling */
                 }
                 
                 #specialContainer {
                     display: flex;
                     flex-direction: column;
                     margin-right: 15px;
-                    flex-shrink: 0; /* Empêcher le conteneur spécial de rétrécir */
-                    width: auto; /* Largeur basée sur le contenu */
+                    flex-shrink: 0; /* Prevent the special container from shrinking */
+                    width: auto; /* Width based on content */
                 }
                 
                 #masonryContainer {
@@ -52,91 +52,91 @@ document.addEventListener('DOMContentLoaded', function() {
                     box-sizing: border-box;
                 }
                 
-                /* Assurer que les encarts ne dépassent pas de leur conteneur */
+                /* Ensure that sections don't overflow their container */
                 .encart {
                     max-width: 100%;
                     box-sizing: border-box;
                 }
                 
-                /* Ajustements responsives */
+                /* Responsive adjustments */
                 @media (max-width: 1200px) {
                     #masonryContainer .encart {
-                        width: 180px; /* Réduit légèrement la largeur des encarts */
+                        width: 180px; /* Slightly reduce the width of sections */
                     }
                 }
                 
                 @media (max-width: 992px) {
                     #masonryContainer .encart {
-                        width: 160px; /* Réduit davantage pour les écrans plus petits */
+                        width: 160px; /* Further reduce for smaller screens */
                     }
                 }
             </style>
         `;
         
-        // Insérer le CSS dans la page
+        // Insert CSS into the page
         document.head.insertAdjacentHTML('beforeend', css);
         
-        // Restructurer complètement notre conteneur principal
+        // Completely restructure our main container
         const container = document.getElementById('bookmarksContainer');
         container.innerHTML = '';
         
-        // Créer deux conteneurs distincts
+        // Create two distinct containers
         const specialContainer = document.createElement('div');
         specialContainer.id = 'specialContainer';
         
         const masonryContainer = document.createElement('div');
         masonryContainer.id = 'masonryContainer';
         
-        // Ajouter ces conteneurs au conteneur principal
+        // Add these containers to the main container
         container.appendChild(specialContainer);
         container.appendChild(masonryContainer);
         
-        // Ajouter les encarts spéciaux dans leur conteneur
+        // Add special sections to their container
         specialContainer.innerHTML = barreDeFavorisHtml + autresFavorisHtml;
         
-        // Ajouter tous les autres encarts dans le conteneur Masonry
+        // Add all other sections to the Masonry container
         masonryContainer.innerHTML = bookmarksHtml;
         
-        // Initialiser Masonry avec des options améliorées
+        // Initialize Masonry with enhanced options
         setTimeout(function() {
-            // Calculer le nombre optimal de colonnes en fonction de l'espace disponible
+            // Calculate the optimal number of columns based on available space
             function calculateOptimalColumnWidth() {
                 const containerWidth = masonryContainer.clientWidth;
-                const minColumnWidth = 200; // Largeur minimale souhaitée pour une colonne
+                const minColumnWidth = 200; // Minimum desired width for a column
                 const maxColumns = Math.floor(containerWidth / minColumnWidth);
                 
-                // S'il y a de l'espace pour au moins 1 colonne
+                // If there's space for at least 1 column
                 if (maxColumns >= 1) {
-                    // Distribuer l'espace disponible uniformément
-                    return Math.floor(containerWidth / maxColumns) - 15; // Soustraire l'espace de gouttière
+                    // Distribute available space evenly
+                    return Math.floor(containerWidth / maxColumns) - 15; // Subtract gutter space
                 }
                 
-                return minColumnWidth; // Fallback à la largeur minimale
+                return minColumnWidth; // Fallback to minimum width
             }
             
-            // Initialiser Masonry avec une largeur de colonne calculée
+            // Initialize Masonry with calculated column width
             const optimalColumnWidth = calculateOptimalColumnWidth();
             
             msnry = new Masonry('#masonryContainer', {
                 itemSelector: '.encart',
                 columnWidth: optimalColumnWidth,
                 gutter: 15,
-                fitWidth: false, // Ne pas utiliser fitWidth car nous voulons occuper tout l'espace
-                percentPosition: true, // Utiliser un positionnement relatif pour une meilleure adaptation
-                horizontalOrder: true, // Pour que les éléments soient organisés de gauche à droite
-                transitionDuration: '0.2s' // Animation douce lors du réarrangement
+                fitWidth: false, // Don't use fitWidth because we want to occupy all space
+                percentPosition: true, // Use relative positioning for better adaptation
+                horizontalOrder: true, // So that elements are organized from left to right
+                transitionDuration: '0.2s' // Smooth animation during rearrangement
             });
             
-            // Recalculer le layout lors du redimensionnement de la fenêtre
+            // Recalculate layout when resizing the window
             window.addEventListener('resize', function() {
                 if (msnry) {
-                    // Re-calculer la largeur optimale de colonne
+                    // Re-calculate optimal column width
                     const newOptimalWidth = calculateOptimalColumnWidth();
                     
-                    // Mettre à jour les options de Masonry
+                    // Update Masonry options
                     msnry.options.columnWidth = newOptimalWidth;
                     
-                    // Recharger le layout
+                    // Reload the layout
                     msnry.layout();
                 }
             });
@@ -193,7 +193,6 @@ function createBookmarksHtml(bookmarkNodes, title = '') {
 }
 
 // Generates favicon HTML for a bookmark node
-// Generates favicon HTML for a bookmark node
 function createFaviconHtml(node) {
     if (!node.url) return `<li>⚠️ <span class="bookmark-title">${node.title || "Sans titre"}</span></li>`;
     
@@ -229,7 +228,7 @@ function createFaviconHtml(node) {
                 }
                 break;
             default:
-                // Pour les autres sites, utiliser directement le service Google S2
+                // For other sites, directly use the Google S2 service
                 faviconUrl = fallbackUrl;
         }
 
@@ -237,7 +236,7 @@ function createFaviconHtml(node) {
         const formattedTitle = formatTitle(node.title, node.url);
 
         // Creating the HTML element for the favicon with the formatted title
-        // Si c'est une URL personnalisée, ajouter une gestion d'erreur, sinon utiliser directement Google S2
+        // If it's a custom URL, add error handling, otherwise directly use the Google S2 service
         if (faviconUrl !== fallbackUrl) {
             return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
                 style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" 

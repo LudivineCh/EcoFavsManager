@@ -70,12 +70,12 @@ input[type="text"] {
     align-items: flex-start;
     width: 90%;
     box-sizing: border-box;
-    padding-left: 15px;  /* Ajouter un padding identique à gauche */
-    padding-right: 15px; /* Maintenir le padding à droite */
+    padding-left: 15px;  /* Add identical padding on the left */
+    padding-right: 15px; /* Maintain padding on the right */
     overflow-x: hidden;
-    justify-content: center; /* Centre le contenu horizontalement */
-    max-width: 22git 00px; 
-    margin: 0 auto; /* Centre le conteneur lui-même */
+    justify-content: center; /* Center content horizontally */
+    max-width: 2200px; 
+    margin: 0 auto; /* Center the container itself */
 }
 
 
@@ -186,8 +186,8 @@ li {
 .folder-title {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Pousse la flèche à droite */
-    padding-right: 5px; /* Espace pour la flèche */
+    justify-content: space-between; /* Pushes the arrow to the right */
+    padding-right: 5px; /* Space for the arrow */
     box-sizing: border-box;
     width: 100%;
 }
@@ -209,8 +209,8 @@ li {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex-grow: 1; /* Prend tout l'espace disponible */
-    margin-right: 5px; /* Espace entre le texte et la flèche */
+    flex-grow: 1; /* Takes all available space */
+    margin-right: 5px; /* Space between the text and the arrow */
 }
 
 /* Styles for the content inside folders */
@@ -235,7 +235,7 @@ li {
     cursor: pointer;
     flex-shrink: 0; /* The arrow does not shrink */
     display: inline-block;
-    margin-left: auto; /* Force la flèche à l'extrême droite */
+    margin-left: auto; /* Forces the arrow to the far right */
     /*color: #eec549; /* Yellow color for the toggle arrow */
     color: #f7d100; /* nice yellow*/
 }
