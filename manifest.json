@@ -25,7 +25,11 @@
     ],
     "content_scripts": [
       {
-        "matches": ["https://*.notion.so/*"],
+        "matches": [
+          "https://*.notion.so/*",
+          "https://notion.so/*",
+          "https://*.notion.site/*"
+        ],
         "js": ["js/extract_favicon.js"],
         "run_at": "document_end"
       }

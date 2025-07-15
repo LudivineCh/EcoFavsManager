@@ -100,15 +100,41 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add all other sections to the Masonry container
         masonryContainer.innerHTML = bookmarksHtml;
+        
         // Override with stored favicon if available
         document.querySelectorAll('img.favicon[data-url]').forEach(img => {
             const pageUrl = img.getAttribute('data-url');
-            chrome.storage.local.get(pageUrl, items => {
-                if (items[pageUrl]) {
-                    img.src = items[pageUrl];
+            
+            // Essayer de récupérer le favicon stocké avec différentes variantes d'URL
+            chrome.storage.local.get(null, items => {
+                // Chercher une correspondance exacte ou partielle
+                for (const [storedUrl, faviconUrl] of Object.entries(items)) {
+                    // Correspondance exacte
+                    if (storedUrl === pageUrl) {
+                        img.src = faviconUrl;
+                        console.log('Exact match found for:', pageUrl, '->', faviconUrl);
+                        break;
+                    }
+                    
+                    // Pour Notion, essayer une correspondance plus flexible
+                    try {
+                        const storedUrlObj = new URL(storedUrl);
+                        const pageUrlObj = new URL(pageUrl);
+                        
+                        // Vérifier si c'est le même domaine et le même chemin (ignorer les paramètres)
+                        if (storedUrlObj.hostname === pageUrlObj.hostname && 
+                            storedUrlObj.pathname === pageUrlObj.pathname) {
+                            img.src = faviconUrl;
+                            console.log('Flexible match found for:', pageUrl, '->', faviconUrl);
+                            break;
+                        }
+                    } catch (e) {
+                        // Ignorer les erreurs d'URL invalides
+                    }
                 }
             });
         });
+        
         // Attach fallback error handlers for favicons
         document.querySelectorAll('img.favicon').forEach(img => {
             const fallback = img.getAttribute('data-fallback-url');
@@ -230,35 +256,42 @@ function createFaviconHtml(node) {
         let faviconUrl;
         let fallbackUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
         
-        // Determining the favicon URL based on the domain
-        switch (domain) {
-            case 'cse-corsicasole.com':
-                faviconUrl = 'icons/favicons/cse.ico';
-                break;
-            case 'wrike.com':
-                faviconUrl = 'icons/favicons/wrike.png';
-                break;
-            case 'app.monportailrh.com':
-                faviconUrl = 'icons/favicons/peoplesphere.png';
-                break;
-            case 'armoires.zeendoc.com':
-                faviconUrl = 'icons/favicons/zeendoc.ico';
-                break;
-            case 'docs.google.com':
-                if (urlObj.pathname.startsWith('/document')) {
-                    faviconUrl = 'icons/favicons/google-docs.png';
-                } else if (urlObj.pathname.startsWith('/spreadsheets')) {
-                    faviconUrl = 'icons/favicons/google-sheets.png';
-                } else if (urlObj.pathname.startsWith('/presentation')) {
-                    faviconUrl = 'icons/favicons/google-slides.png';
-                } else {
-                    faviconUrl = 'icons/favicons/google-drive.png';
-                }
-                break;
-            default:
-                // Use Google S2 service as fallback
-                faviconUrl = fallbackUrl;
-                break;
+        // Pour Notion, utiliser le favicon par défaut mais permettre le remplacement
+        if (domain === 'notion.so' || domain.endsWith('.notion.so')) {
+            // Utiliser temporairement le favicon Notion par défaut
+            // Il sera remplacé par le favicon personnalisé s'il existe dans le storage
+            faviconUrl = fallbackUrl;
+        } else {
+            // Determining the favicon URL based on the domain
+            switch (domain) {
+                case 'cse-corsicasole.com':
+                    faviconUrl = 'icons/favicons/cse.ico';
+                    break;
+                case 'wrike.com':
+                    faviconUrl = 'icons/favicons/wrike.png';
+                    break;
+                case 'app.monportailrh.com':
+                    faviconUrl = 'icons/favicons/peoplesphere.png';
+                    break;
+                case 'armoires.zeendoc.com':
+                    faviconUrl = 'icons/favicons/zeendoc.ico';
+                    break;
+                case 'docs.google.com':
+                    if (urlObj.pathname.startsWith('/document')) {
+                        faviconUrl = 'icons/favicons/google-docs.png';
+                    } else if (urlObj.pathname.startsWith('/spreadsheets')) {
+                        faviconUrl = 'icons/favicons/google-sheets.png';
+                    } else if (urlObj.pathname.startsWith('/presentation')) {
+                        faviconUrl = 'icons/favicons/google-slides.png';
+                    } else {
+                        faviconUrl = 'icons/favicons/google-drive.png';
+                    }
+                    break;
+                default:
+                    // Use Google S2 service as fallback
+                    faviconUrl = fallbackUrl;
+                    break;
+            }
         }
 
         // Formatting the title for display
