@@ -223,6 +223,7 @@ li {
 .folder-icon {
     flex-shrink: 0; /* The icon does not shrink */
     margin-right: 5px;
+    filter: brightness(0.7); /* Darken folder icon */
 }
 
 /* When folder is open, rotate the icon */
@@ -236,8 +237,7 @@ li {
     flex-shrink: 0; /* The arrow does not shrink */
     display: inline-block;
     margin-left: auto; /* Forces the arrow to the far right */
-    /*color: #eec549; /* Yellow color for the toggle arrow */
-    color: #f7d100; /* nice yellow*/
+    color: #b8860b; /* Darker shade for the toggle arrow */
 }
 
 /* Styles for open folders */
@@ -281,4 +281,19 @@ li {
     #bookmarksContainer {
         width: 70%;
     }
+}
+
+/* Theme toggle button styling */
+#themeToggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin-left: 10px;
+}
+
+/* Light mode override */
+body.light-mode {
+    background-color: #f4f4f4;
+    color: #0a0a0a;
 }

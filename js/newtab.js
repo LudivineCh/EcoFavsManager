@@ -151,6 +151,23 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleFolderDisplay(folderTitle, folderContent);
         }
     });
+    
+    // Theme toggle button with sun/moon icon
+    const themeToggleBtn = document.createElement('button');
+    themeToggleBtn.id = 'themeToggle';
+    themeToggleBtn.title = 'Toggle light/dark mode';
+    themeToggleBtn.textContent = '☀︎';
+    themeToggleBtn.style.background = 'none';
+    themeToggleBtn.style.border = 'none';
+    themeToggleBtn.style.cursor = 'pointer';
+    themeToggleBtn.style.fontSize = '18px';
+    themeToggleBtn.style.marginLeft = '10px';
+    document.querySelector('header').appendChild(themeToggleBtn);
+
+    themeToggleBtn.addEventListener('click', function() {
+        document.body.classList.toggle('light-mode');
+        themeToggleBtn.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀︎';
+    });
 });
 
 // Handler for expanding/collapsing subfolders
