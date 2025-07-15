@@ -58,6 +58,23 @@ input[type="text"] {
     margin-top: 20px; /* Space above the search bar */
 }
 
+/* Styles for Google search button */
+#searchButtonGoogle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+#searchButtonGoogle img {
+    width: 32px;
+    height: 32px;
+    display: block;
+    transition: filter 0.2s;
+}
+#searchButtonGoogle:hover img {
+    filter: brightness(0.8);
+}
+
 /* Styles for the bookmarks section */
 #bookmarksSection {
     /* max-width: 960px;  */
@@ -67,13 +84,15 @@ input[type="text"] {
 /* Styles for the bookmarks container */
 #bookmarksContainer {
     display: flex;
+    flex-wrap: wrap; /* Allow items to wrap based on available width */
     align-items: flex-start;
-    width: 90%;
+    width: 100%;
     box-sizing: border-box;
     padding-left: 15px;  /* Add identical padding on the left */
     padding-right: 15px; /* Maintain padding on the right */
     overflow-x: hidden;
-    justify-content: center; /* Center content horizontally */
+    justify-content: flex-start; /* Left-align content */
+    gap: 15px; /* Space between items */
     max-width: 2200px; 
     margin: 0 auto; /* Center the container itself */
 }
@@ -81,7 +100,7 @@ input[type="text"] {
 
 /* Styles for individual bookmark boxes */
 .encart {
-    width: 180px; /* Set a fixed width */
+    width: 200px !important; /* Set a fixed width - important to override inline styles */
     margin-bottom: 15px;  /*Space between items */
     background-color: #fff; /* Background color for the boxes */
     border: 1px solid #ddd; /* Border for the boxes */
@@ -172,7 +191,7 @@ li {
     overflow: hidden;
     text-overflow: ellipsis;
     flex-grow: 1; /* Allows text to take up available space */
-    max-width: 150px; /* Or adjust as needed */
+    max-width: 170px; /* Adjusted to match new encart width */
 }
 
 /* Styles for folders */
@@ -296,4 +315,17 @@ li {
 body.light-mode {
     background-color: #f4f4f4;
     color: #0a0a0a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    #masonryContainer .encart {
+        width: 200px !important; /* Keep consistent width */
+    }
+}
+
+@media (max-width: 992px) {
+    #masonryContainer .encart {
+        width: 180px !important; /* Slightly reduce for smaller screens */
+    }
 }

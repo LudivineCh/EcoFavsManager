@@ -20,7 +20,15 @@
     },
     "permissions": [
       "bookmarks",
-      "tabs"
+      "tabs",
+      "storage"
+    ],
+    "content_scripts": [
+      {
+        "matches": ["https://*.notion.so/*"],
+        "js": ["js/extract_favicon.js"],
+        "run_at": "document_end"
+      }
     ],
     "content_security_policy": {
       "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' https://icon.horse/icon/*"

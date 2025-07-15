@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 #specialContainer {
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row;
+                    flex-wrap: wrap; /* Allow wrapping horizontally when needed */
                     margin-right: 15px;
                     flex-shrink: 0; /* Prevent the special container from shrinking */
                     width: auto; /* Width based on content */
@@ -70,6 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         width: 160px; /* Further reduce for smaller screens */
                     }
                 }
+                #specialContainer .encart {
+                    margin-right: 15px;
+                }
             </style>
         `;
         
@@ -90,12 +94,30 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add these containers to the main container
         container.appendChild(specialContainer);
         container.appendChild(masonryContainer);
-        
+
         // Add special sections to their container
         specialContainer.innerHTML = barreDeFavorisHtml + autresFavorisHtml;
         
         // Add all other sections to the Masonry container
         masonryContainer.innerHTML = bookmarksHtml;
+        // Override with stored favicon if available
+        document.querySelectorAll('img.favicon[data-url]').forEach(img => {
+            const pageUrl = img.getAttribute('data-url');
+            chrome.storage.local.get(pageUrl, items => {
+                if (items[pageUrl]) {
+                    img.src = items[pageUrl];
+                }
+            });
+        });
+        // Attach fallback error handlers for favicons
+        document.querySelectorAll('img.favicon').forEach(img => {
+            const fallback = img.getAttribute('data-fallback-url');
+            if (fallback) {
+                img.onerror = () => { img.src = fallback; };
+            }
+        });
+
+        // (ResizeObserver removed; Masonry will handle layout on window resize)
         
         // Initialize Masonry with enhanced options
         setTimeout(function() {
@@ -114,31 +136,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return minColumnWidth; // Fallback to minimum width
             }
             
-            // Initialize Masonry with calculated column width
-            const optimalColumnWidth = calculateOptimalColumnWidth();
-            
+            // Initialize Masonry using item width for column width
             msnry = new Masonry('#masonryContainer', {
                 itemSelector: '.encart',
-                columnWidth: optimalColumnWidth,
+                columnWidth: '.encart',
                 gutter: 15,
                 fitWidth: false, // Don't use fitWidth because we want to occupy all space
                 percentPosition: true, // Use relative positioning for better adaptation
                 horizontalOrder: true, // So that elements are organized from left to right
                 transitionDuration: '0.2s' // Smooth animation during rearrangement
             });
-            
-            // Recalculate layout when resizing the window
+
+            // Recalculate layout on window resize
             window.addEventListener('resize', function() {
-                if (msnry) {
-                    // Re-calculate optimal column width
-                    const newOptimalWidth = calculateOptimalColumnWidth();
-                    
-                    // Update Masonry options
-                    msnry.options.columnWidth = newOptimalWidth;
-                    
-                    // Reload the layout
-                    msnry.layout();
-                }
+                 if (msnry) msnry.layout();
             });
         }, 100);
     });
@@ -245,25 +256,19 @@ function createFaviconHtml(node) {
                 }
                 break;
             default:
-                // For other sites, directly use the Google S2 service
+                // Use Google S2 service as fallback
                 faviconUrl = fallbackUrl;
+                break;
         }
 
         // Formatting the title for display
         const formattedTitle = formatTitle(node.title, node.url);
 
-        // Creating the HTML element for the favicon with the formatted title
-        // If it's a custom URL, add error handling, otherwise directly use the Google S2 service
-        if (faviconUrl !== fallbackUrl) {
-            return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
-                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" 
-                onerror="this.src='${fallbackUrl}'">
-                <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
-        } else {
-            return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
-                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
-                <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
-        }
+        // Create the HTML element for the favicon with the formatted title and include fallback URL for error handling
+        return `<li><img class='favicon' data-url='${node.url}' src='${faviconUrl}' alt='${formattedTitle}'
+            style='width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;'
+            data-fallback-url='${fallbackUrl}'>
+            <a href='${node.url}' target='_blank' title='${node.title}' class='bookmark-title'>${formattedTitle}</a></li>`;
     } catch (error) {
         console.error("Error processing bookmark URL:", node.url, error);
         return `<li>🔗 <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${node.title || node.url}</a></li>`;
