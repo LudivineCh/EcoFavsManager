@@ -238,6 +238,17 @@ li {
     padding-left: 20px; /* Indentation to distinguish folder content from its title */
 }
 
+/* NEW: Slight additional indent for each list item that appears inside a folder */
+.folder-content li {
+    margin-left: 10px; /* Shift everything inside the folder to the right */
+}
+
+/* NEW: Slight additional indent for each direct child item of an opened folder */
+.folder-content > li {
+    /* Using margin rather than additional padding so icons stay aligned */
+    margin-left: 10px;
+}
+
 /* Styles for the collapsible folder icon (add your own icon if necessary) */
 .folder-icon {
     flex-shrink: 0; /* The icon does not shrink */
