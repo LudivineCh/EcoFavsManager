@@ -1,5 +1,8 @@
 var msnry;
 
+// Helper function to detect separator folders (titles containing only dashes)
+const isSeparatorTitle = title => typeof title === 'string' && /^-+$/.test(title.trim());
+
 document.addEventListener('DOMContentLoaded', function() {
     // Build the bookmarks structure from Chrome's bookmark tree
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
@@ -10,6 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Constructing links for the favorites bar
         let barreDeFavorisLinksHtml = '<ul>';
         for (const item of barreDeFavoris.children) {
+            // Render a separator line for items named only with dashes
+            if (isSeparatorTitle(item.title)) {
+                barreDeFavorisLinksHtml += '<li class="separator-line"></li>';
+                continue;
+            }
             if (item.children) {
                 bookmarksHtml += `<div class="encart"><h2>${item.title}</h2>` + createBookmarksHtml(item.children) + '</div>';
             } else {
@@ -229,6 +237,11 @@ function createBookmarksHtml(bookmarkNodes, title = '') {
     let html = title ? `<h2>${title}</h2>` : '';
     html += '<ul>';
     for (const node of bookmarkNodes) {
+        // If the node title is just dashes, render a separator line instead of a folder/bookmark
+        if (isSeparatorTitle(node.title)) {
+            html += '<li class="separator-line"></li>';
+            continue;
+        }
         if (node.children) {
             html += `<li class="folder-title">` +
                     `<img class="folder-icon" src="icons/favicons/folder.png" alt="Folder">` +
