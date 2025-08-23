@@ -1,5 +1,8 @@
 var msnry;
 
+// Helper function to detect separator folders (titles containing only dashes)
+const isSeparatorTitle = title => typeof title === 'string' && /^-+$/.test(title.trim());
+
 document.addEventListener('DOMContentLoaded', function() {
     // Build the bookmarks structure from Chrome's bookmark tree
     chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
@@ -10,6 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Constructing links for the favorites bar
         let barreDeFavorisLinksHtml = '<ul>';
         for (const item of barreDeFavoris.children) {
+            // Render a separator line for items named only with dashes
+            if (isSeparatorTitle(item.title)) {
+                barreDeFavorisLinksHtml += '<li class="separator-line"></li>';
+                continue;
+            }
             if (item.children) {
                 bookmarksHtml += `<div class="encart"><h2>${item.title}</h2>` + createBookmarksHtml(item.children) + '</div>';
             } else {
@@ -41,7 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 #specialContainer {
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row;
+                    flex-wrap: wrap; /* Allow wrapping horizontally when needed */
                     margin-right: 15px;
                     flex-shrink: 0; /* Prevent the special container from shrinking */
                     width: auto; /* Width based on content */
@@ -70,6 +79,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         width: 160px; /* Further reduce for smaller screens */
                     }
                 }
+                #specialContainer .encart {
+                    margin-right: 15px;
+                }
             </style>
         `;
         
@@ -90,12 +102,56 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add these containers to the main container
         container.appendChild(specialContainer);
         container.appendChild(masonryContainer);
-        
+
         // Add special sections to their container
         specialContainer.innerHTML = barreDeFavorisHtml + autresFavorisHtml;
         
         // Add all other sections to the Masonry container
         masonryContainer.innerHTML = bookmarksHtml;
+        
+        // Override with stored favicon if available
+        document.querySelectorAll('img.favicon[data-url]').forEach(img => {
+            const pageUrl = img.getAttribute('data-url');
+            
+            // Essayer de récupérer le favicon stocké avec différentes variantes d'URL
+            chrome.storage.local.get(null, items => {
+                // Chercher une correspondance exacte ou partielle
+                for (const [storedUrl, faviconUrl] of Object.entries(items)) {
+                    // Correspondance exacte
+                    if (storedUrl === pageUrl) {
+                        img.src = faviconUrl;
+                        console.log('Exact match found for:', pageUrl, '->', faviconUrl);
+                        break;
+                    }
+                    
+                    // Pour Notion, essayer une correspondance plus flexible
+                    try {
+                        const storedUrlObj = new URL(storedUrl);
+                        const pageUrlObj = new URL(pageUrl);
+                        
+                        // Vérifier si c'est le même domaine et le même chemin (ignorer les paramètres)
+                        if (storedUrlObj.hostname === pageUrlObj.hostname && 
+                            storedUrlObj.pathname === pageUrlObj.pathname) {
+                            img.src = faviconUrl;
+                            console.log('Flexible match found for:', pageUrl, '->', faviconUrl);
+                            break;
+                        }
+                    } catch (e) {
+                        // Ignorer les erreurs d'URL invalides
+                    }
+                }
+            });
+        });
+        
+        // Attach fallback error handlers for favicons
+        document.querySelectorAll('img.favicon').forEach(img => {
+            const fallback = img.getAttribute('data-fallback-url');
+            if (fallback) {
+                img.onerror = () => { img.src = fallback; };
+            }
+        });
+
+        // (ResizeObserver removed; Masonry will handle layout on window resize)
         
         // Initialize Masonry with enhanced options
         setTimeout(function() {
@@ -114,31 +170,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return minColumnWidth; // Fallback to minimum width
             }
             
-            // Initialize Masonry with calculated column width
-            const optimalColumnWidth = calculateOptimalColumnWidth();
-            
+            // Initialize Masonry using item width for column width
             msnry = new Masonry('#masonryContainer', {
                 itemSelector: '.encart',
-                columnWidth: optimalColumnWidth,
+                columnWidth: '.encart',
                 gutter: 15,
                 fitWidth: false, // Don't use fitWidth because we want to occupy all space
                 percentPosition: true, // Use relative positioning for better adaptation
                 horizontalOrder: true, // So that elements are organized from left to right
                 transitionDuration: '0.2s' // Smooth animation during rearrangement
             });
-            
-            // Recalculate layout when resizing the window
+
+            // Recalculate layout on window resize
             window.addEventListener('resize', function() {
-                if (msnry) {
-                    // Re-calculate optimal column width
-                    const newOptimalWidth = calculateOptimalColumnWidth();
-                    
-                    // Update Masonry options
-                    msnry.options.columnWidth = newOptimalWidth;
-                    
-                    // Reload the layout
-                    msnry.layout();
-                }
+                 if (msnry) msnry.layout();
             });
         }, 100);
     });
@@ -150,6 +195,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const folderContent = folderTitle.nextElementSibling;
             toggleFolderDisplay(folderTitle, folderContent);
         }
+    });
+    
+    // Theme toggle button with sun/moon icon
+    const themeToggleBtn = document.createElement('button');
+    themeToggleBtn.id = 'themeToggle';
+    themeToggleBtn.title = 'Toggle light/dark mode';
+    themeToggleBtn.textContent = '☀︎';
+    themeToggleBtn.style.background = 'none';
+    themeToggleBtn.style.border = 'none';
+    themeToggleBtn.style.cursor = 'pointer';
+    themeToggleBtn.style.fontSize = '18px';
+    themeToggleBtn.style.marginLeft = '10px';
+    document.querySelector('header').appendChild(themeToggleBtn);
+
+    themeToggleBtn.addEventListener('click', function() {
+        document.body.classList.toggle('light-mode');
+        themeToggleBtn.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀︎';
     });
 });
 
@@ -175,6 +237,11 @@ function createBookmarksHtml(bookmarkNodes, title = '') {
     let html = title ? `<h2>${title}</h2>` : '';
     html += '<ul>';
     for (const node of bookmarkNodes) {
+        // If the node title is just dashes, render a separator line instead of a folder/bookmark
+        if (isSeparatorTitle(node.title)) {
+            html += '<li class="separator-line"></li>';
+            continue;
+        }
         if (node.children) {
             html += `<li class="folder-title">` +
                     `<img class="folder-icon" src="icons/favicons/folder.png" alt="Folder">` +
@@ -202,51 +269,52 @@ function createFaviconHtml(node) {
         let faviconUrl;
         let fallbackUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
         
-        // Determining the favicon URL based on the domain
-        switch (domain) {
-            case 'cse-corsicasole.com':
-                faviconUrl = 'icons/favicons/cse.ico';
-                break;
-            case 'wrike.com':
-                faviconUrl = 'icons/favicons/wrike.png';
-                break;
-            case 'app.monportailrh.com':
-                faviconUrl = 'icons/favicons/peoplesphere.png';
-                break;
-            case 'armoires.zeendoc.com':
-                faviconUrl = 'icons/favicons/zeendoc.ico';
-                break;
-            case 'docs.google.com':
-                if (urlObj.pathname.startsWith('/document')) {
-                    faviconUrl = 'icons/favicons/google-docs.png';
-                } else if (urlObj.pathname.startsWith('/spreadsheets')) {
-                    faviconUrl = 'icons/favicons/google-sheets.png';
-                } else if (urlObj.pathname.startsWith('/presentation')) {
-                    faviconUrl = 'icons/favicons/google-slides.png';
-                } else {
-                    faviconUrl = 'icons/favicons/google-drive.png';
-                }
-                break;
-            default:
-                // For other sites, directly use the Google S2 service
-                faviconUrl = fallbackUrl;
+        // Pour Notion, utiliser le favicon par défaut mais permettre le remplacement
+        if (domain === 'notion.so' || domain.endsWith('.notion.so')) {
+            // Utiliser temporairement le favicon Notion par défaut
+            // Il sera remplacé par le favicon personnalisé s'il existe dans le storage
+            faviconUrl = fallbackUrl;
+        } else {
+            // Determining the favicon URL based on the domain
+            switch (domain) {
+                case 'cse-corsicasole.com':
+                    faviconUrl = 'icons/favicons/cse.ico';
+                    break;
+                case 'wrike.com':
+                    faviconUrl = 'icons/favicons/wrike.png';
+                    break;
+                case 'app.monportailrh.com':
+                    faviconUrl = 'icons/favicons/peoplesphere.png';
+                    break;
+                case 'armoires.zeendoc.com':
+                    faviconUrl = 'icons/favicons/zeendoc.ico';
+                    break;
+                case 'docs.google.com':
+                    if (urlObj.pathname.startsWith('/document')) {
+                        faviconUrl = 'icons/favicons/google-docs.png';
+                    } else if (urlObj.pathname.startsWith('/spreadsheets')) {
+                        faviconUrl = 'icons/favicons/google-sheets.png';
+                    } else if (urlObj.pathname.startsWith('/presentation')) {
+                        faviconUrl = 'icons/favicons/google-slides.png';
+                    } else {
+                        faviconUrl = 'icons/favicons/google-drive.png';
+                    }
+                    break;
+                default:
+                    // Use Google S2 service as fallback
+                    faviconUrl = fallbackUrl;
+                    break;
+            }
         }
 
         // Formatting the title for display
         const formattedTitle = formatTitle(node.title, node.url);
 
-        // Creating the HTML element for the favicon with the formatted title
-        // If it's a custom URL, add error handling, otherwise directly use the Google S2 service
-        if (faviconUrl !== fallbackUrl) {
-            return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
-                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" 
-                onerror="this.src='${fallbackUrl}'">
-                <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
-        } else {
-            return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
-                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
-                <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
-        }
+        // Create the HTML element for the favicon with the formatted title and include fallback URL for error handling
+        return `<li><img class='favicon' data-url='${node.url}' src='${faviconUrl}' alt='${formattedTitle}'
+            style='width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;'
+            data-fallback-url='${fallbackUrl}'>
+            <a href='${node.url}' target='_blank' title='${node.title}' class='bookmark-title'>${formattedTitle}</a></li>`;
     } catch (error) {
         console.error("Error processing bookmark URL:", node.url, error);
         return `<li>🔗 <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${node.title || node.url}</a></li>`;

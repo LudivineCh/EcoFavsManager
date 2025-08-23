@@ -58,6 +58,23 @@ input[type="text"] {
     margin-top: 20px; /* Space above the search bar */
 }
 
+/* Styles for Google search button */
+#searchButtonGoogle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+#searchButtonGoogle img {
+    width: 32px;
+    height: 32px;
+    display: block;
+    transition: filter 0.2s;
+}
+#searchButtonGoogle:hover img {
+    filter: brightness(0.8);
+}
+
 /* Styles for the bookmarks section */
 #bookmarksSection {
     /* max-width: 960px;  */
@@ -67,13 +84,15 @@ input[type="text"] {
 /* Styles for the bookmarks container */
 #bookmarksContainer {
     display: flex;
+    flex-wrap: wrap; /* Allow items to wrap based on available width */
     align-items: flex-start;
-    width: 90%;
+    width: 100%;
     box-sizing: border-box;
     padding-left: 15px;  /* Add identical padding on the left */
     padding-right: 15px; /* Maintain padding on the right */
     overflow-x: hidden;
-    justify-content: center; /* Center content horizontally */
+    justify-content: flex-start; /* Left-align content */
+    gap: 15px; /* Space between items */
     max-width: 2200px; 
     margin: 0 auto; /* Center the container itself */
 }
@@ -81,14 +100,16 @@ input[type="text"] {
 
 /* Styles for individual bookmark boxes */
 .encart {
-    width: 180px; /* Set a fixed width */
+    width: 200px !important; /* Set a fixed width - important to override inline styles */
     margin-bottom: 15px;  /*Space between items */
-    background-color: #fff; /* Background color for the boxes */
+    background-color: #f0f0f0; /* Light grey background colour for all bookmark boxes */
     border: 1px solid #ddd; /* Border for the boxes */
     border-radius: 8px; /* Rounded corners for the boxes */
     padding: 10px; /* Padding inside the boxes */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle 3D effect shadow */
 }
+
+/* The .barre-favoris class now inherits the same background, no override needed */
 
 /* Styles for headings, paragraphs, and links inside bookmark boxes */
 .encart h2, .encart p, .encart a {
@@ -172,7 +193,7 @@ li {
     overflow: hidden;
     text-overflow: ellipsis;
     flex-grow: 1; /* Allows text to take up available space */
-    max-width: 150px; /* Or adjust as needed */
+    max-width: 170px; /* Adjusted to match new encart width */
 }
 
 /* Styles for folders */
@@ -219,10 +240,22 @@ li {
     padding-left: 20px; /* Indentation to distinguish folder content from its title */
 }
 
+/* NEW: Slight additional indent for each list item that appears inside a folder */
+.folder-content li {
+    margin-left: 10px; /* Shift everything inside the folder to the right */
+}
+
+/* NEW: Slight additional indent for each direct child item of an opened folder */
+.folder-content > li {
+    /* Using margin rather than additional padding so icons stay aligned */
+    margin-left: 10px;
+}
+
 /* Styles for the collapsible folder icon (add your own icon if necessary) */
 .folder-icon {
     flex-shrink: 0; /* The icon does not shrink */
     margin-right: 5px;
+    filter: brightness(0.7); /* Darken folder icon */
 }
 
 /* When folder is open, rotate the icon */
@@ -236,8 +269,7 @@ li {
     flex-shrink: 0; /* The arrow does not shrink */
     display: inline-block;
     margin-left: auto; /* Forces the arrow to the far right */
-    /*color: #eec549; /* Yellow color for the toggle arrow */
-    color: #f7d100; /* nice yellow*/
+    color: #b8860b; /* Darker shade for the toggle arrow */
 }
 
 /* Styles for open folders */
@@ -281,4 +313,52 @@ li {
     #bookmarksContainer {
         width: 70%;
     }
+}
+
+/* Theme toggle button styling */
+#themeToggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin-left: 10px;
+}
+
+/* Light mode override */
+body.light-mode {
+    background-color: #f4f4f4;
+    color: #0a0a0a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    #masonryContainer .encart {
+        width: 200px !important; /* Keep consistent width */
+    }
+}
+
+@media (max-width: 992px) {
+    #masonryContainer .encart {
+        width: 180px !important; /* Slightly reduce for smaller screens */
+    }
+}
+
+/* Separator line for bookmark lists (folders named with dashes) */
+li.separator-line {
+    display: block; /* override flex from .encart li */
+    position: relative;
+    height: 16px; /* same height as a favorite row */
+    width: 100%; /* full length */
+    margin: 5px 0; /* equal vertical space */
+    list-style: none;
+}
+
+li.separator-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #999;
+    transform: translateY(-50%); /* perfectly center the line */
 }

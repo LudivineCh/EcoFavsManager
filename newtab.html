@@ -7,15 +7,12 @@
 </head>
 <body>
     <header>
-        <!-- Lilo search form -->
-        <form action="https://search.lilo.org/results.php" method="GET">
-            <input type="text" id="searchInputLilo" name="q" placeholder="Search on Lilo...">
-            <input type="image" src="icons/icons48-lilo-logo.png" alt="Lilo Search"> <!-- Assurez-vous que l'icône Lilo existe dans vos ressources -->
-        </form>
-        <!-- Ecosia search form -->
-        <form action="https://www.ecosia.org/search" method="GET">
-            <input type="text" id="searchInputEcosia" name="q" placeholder="Search on Ecosia...">
-            <input type="image" src="icons/icons8-arbre-48.png" alt="Ecosia Search">
+        <!-- Google search form -->
+        <form action="https://www.google.com/search" method="GET">
+            <input type="text" id="searchInputGoogle" name="q" placeholder="Search on Google...">
+            <button type="submit" id="searchButtonGoogle">
+                <img src="https://www.google.com/s2/favicons?domain=google.com&sz=64" alt="Google logo">
+            </button>
         </form>
     </header>
     
@@ -27,8 +24,6 @@
     </main>
 
     <footer>
-        <p>EcoFavsManager is a completely free, fully customizable, and open-source tool. You can contribute to its development by visiting the LudivineCh GitHub account. If you have any questions or suggestions, feel free to open an issue on the repository.</p>
-    </p>
     </footer>
     <script src="lib/masonry.pkgd.min.js"></script>
     <!-- Including your JavaScript script that will manage the display of bookmarks -->
