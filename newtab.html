@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Bookmark Manager</title>
@@ -7,12 +7,10 @@
 </head>
 <body>
     <header>
-        <!-- Lilo search form -->
         <form action="https://search.lilo.org/results.php" method="GET">
             <input type="text" id="searchInputLilo" name="q" placeholder="Search on Lilo...">
-            <input type="image" src="icons/icons48-lilo-logo.png" alt="Lilo Search"> <!-- Assurez-vous que l'icône Lilo existe dans vos ressources -->
+            <input type="image" src="icons/icons48-lilo-logo.png" alt="Lilo Search">
         </form>
-        <!-- Ecosia search form -->
         <form action="https://www.ecosia.org/search" method="GET">
             <input type="text" id="searchInputEcosia" name="q" placeholder="Search on Ecosia...">
             <input type="image" src="icons/icons8-arbre-48.png" alt="Ecosia Search">
@@ -20,7 +18,6 @@
     </header>
     
     <main>
-        <!-- The container for your bookmarks will be filled by JavaScript -->
         <section id="bookmarksSection" class="encarts-container">
             <div id="bookmarksContainer"></div>
         </section>
@@ -30,8 +27,8 @@
         <p>EcoFavsManager is a free, fully customizable, and open-source tool. You can contribute to its development by visiting the LudivineCh GitHub account. If you have any questions or suggestions, feel free to open an issue on the repository.</p>
         <p>💡 <strong>Tip:</strong> Create a bookmark folder named <em>"sep"</em> to add a visual separator line between your bookmarks. This works both at the top level (between bookmark cards) and inside subfolders.</p>
     </footer>
+
     <script src="lib/masonry.pkgd.min.js"></script>
-    <!-- Including your JavaScript script that will manage the display of bookmarks -->
     <script src="js/newtab.js"></script>
 </body>
 </html>

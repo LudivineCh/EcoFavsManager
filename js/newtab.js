@@ -1,38 +1,34 @@
 var msnry;
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Build the bookmarks structure from Chrome's bookmark tree
-    chrome.bookmarks.getTree(function(bookmarkTreeNodes) {
+document.addEventListener('DOMContentLoaded', function () {
+    chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
         let bookmarksHtml = '';
-        const barreDeFavoris = bookmarkTreeNodes[0].children[0];
-        const autresFavoris = bookmarkTreeNodes[0].children[1];
+        const bookmarksBar = bookmarkTreeNodes[0].children[0];
+        const otherBookmarks = bookmarkTreeNodes[0].children[1];
 
-        // Constructing links for the favorites bar
-        let barreDeFavorisLinksHtml = '<ul>';
-        for (const item of barreDeFavoris.children) {
+        let bookmarksBarLinksHtml = '<ul>';
+        for (const item of bookmarksBar.children) {
             if (item.children) {
-                // ===== CHECK FOR SEPARATOR FOLDER =====
                 if (item.title.toLowerCase().trim() === 'sep') {
                     bookmarksHtml += `<div class="encart separator-encart"><hr class="separator-line"></div>`;
                 } else {
                     bookmarksHtml += `<div class="encart"><h2>${item.title}</h2>` + createBookmarksHtml(item.children) + '</div>';
                 }
             } else {
-                barreDeFavorisLinksHtml += createFaviconHtml(item);
+                bookmarksBarLinksHtml += createFaviconHtml(item);
             }
         }
-        barreDeFavorisLinksHtml += barreDeFavorisLinksHtml === '<ul>' ? '' : '</ul>';
-        
-        // Create special sections
-        let barreDeFavorisHtml = barreDeFavorisLinksHtml !== '<ul></ul>' ? 
-            `<div class="encart barre-favoris"><h2>Barre de Favoris</h2>${barreDeFavorisLinksHtml}</div>` : '';
-        
-        let autresFavorisHtml = '';
-        if (autresFavoris.children.length > 0) {
-            autresFavorisHtml = `<div class="encart autres-favoris">${createBookmarksHtml(autresFavoris.children, 'Autres Favoris')}</div>`;
+        bookmarksBarLinksHtml += bookmarksBarLinksHtml === '<ul>' ? '' : '</ul>';
+
+        let bookmarksBarHtml = bookmarksBarLinksHtml !== '<ul></ul>'
+            ? `<div class="encart barre-favoris"><h2>Barre de Favoris</h2>${bookmarksBarLinksHtml}</div>`
+            : '';
+
+        let otherBookmarksHtml = '';
+        if (otherBookmarks.children.length > 0) {
+            otherBookmarksHtml = `<div class="encart autres-favoris">${createBookmarksHtml(otherBookmarks.children, 'Autres Favoris')}</div>`;
         }
-        
-        // Add CSS for our new structure with responsive design
+
         const css = `
             <style>
                 #bookmarksContainer {
@@ -43,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     padding-right: 15px;
                     overflow-x: hidden;
                 }
-                
                 #specialContainer {
                     display: flex;
                     flex-direction: column;
@@ -51,71 +46,56 @@ document.addEventListener('DOMContentLoaded', function() {
                     flex-shrink: 0;
                     width: auto;
                 }
-                
                 #masonryContainer {
                     flex: 1;
                     box-sizing: border-box;
                 }
-                
                 .encart {
                     max-width: 100%;
                     box-sizing: border-box;
                 }
-                
                 @media (max-width: 1200px) {
-                    #masonryContainer .encart {
-                        width: 180px;
-                    }
+                    #masonryContainer .encart { width: 180px; }
                 }
-                
                 @media (max-width: 992px) {
-                    #masonryContainer .encart {
-                        width: 160px;
-                    }
+                    #masonryContainer .encart { width: 160px; }
                 }
             </style>
         `;
-        
-        // Insert CSS into the page
+
         document.head.insertAdjacentHTML('beforeend', css);
-        
-        // Completely restructure our main container
+
         const container = document.getElementById('bookmarksContainer');
         container.innerHTML = '';
-        
-        // Create two distinct containers
+
         const specialContainer = document.createElement('div');
         specialContainer.id = 'specialContainer';
-        
+
         const masonryContainer = document.createElement('div');
         masonryContainer.id = 'masonryContainer';
-        
-        // Add these containers to the main container
+
         container.appendChild(specialContainer);
         container.appendChild(masonryContainer);
-        
-        // Add special sections to their container
-        specialContainer.innerHTML = barreDeFavorisHtml + autresFavorisHtml;
-        
-        // Add all other sections to the Masonry container
+
+        specialContainer.innerHTML = bookmarksBarHtml + otherBookmarksHtml;
         masonryContainer.innerHTML = bookmarksHtml;
-        
-        // Initialize Masonry with enhanced options
-        setTimeout(function() {
+
+        // Initialize favicon fallback for custom icons (after DOM injection)
+        initFaviconFallbacks();
+
+        setTimeout(function () {
             function calculateOptimalColumnWidth() {
                 const containerWidth = masonryContainer.clientWidth;
                 const minColumnWidth = 200;
                 const maxColumns = Math.floor(containerWidth / minColumnWidth);
-                
                 if (maxColumns >= 1) {
                     return Math.floor(containerWidth / maxColumns) - 15;
                 }
-                
                 return minColumnWidth;
             }
-            
+
             const optimalColumnWidth = calculateOptimalColumnWidth();
-            
+
             msnry = new Masonry('#masonryContainer', {
                 itemSelector: '.encart',
                 columnWidth: optimalColumnWidth,
@@ -125,8 +105,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 horizontalOrder: true,
                 transitionDuration: '0.2s'
             });
-            
-            window.addEventListener('resize', function() {
+
+            window.addEventListener('resize', function () {
                 if (msnry) {
                     const newOptimalWidth = calculateOptimalColumnWidth();
                     msnry.options.columnWidth = newOptimalWidth;
@@ -136,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     });
 
-    // Click handler to show/hide sub-folders
-    document.body.addEventListener('click', function(event) {
+    // Delegate click events for folder toggling
+    document.body.addEventListener('click', function (event) {
         if (event.target.classList.contains('toggle-folder') || event.target.classList.contains('folder-toggle')) {
             const folderTitle = event.target.closest('.folder-title');
             const folderContent = folderTitle.nextElementSibling;
@@ -146,40 +126,78 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Handler for expanding/collapsing subfolders
+// ================================================================
+// ===== FAVICON FALLBACK =====
+// ================================================================
+//
+// Only needed for custom favicons (local files).
+// If a local icon fails → try DuckDuckGo.
+// If DuckDuckGo fails → browser shows its default icon.
+//
+// ================================================================
+
+/**
+ * Attaches fallback to custom favicon images only.
+ * If a local icon file fails, it falls back to DuckDuckGo.
+ */
+function initFaviconFallbacks() {
+    document.querySelectorAll('.favicon.custom-favicon[data-domain]').forEach(function (img) {
+        const domain = img.dataset.domain;
+
+        img.onerror = function () {
+            // Local icon failed → try DuckDuckGo, then give up
+            img.onerror = null;
+            img.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+        };
+
+        // Handle images that already failed before this handler was attached
+        if (img.complete && img.naturalWidth === 0) {
+            img.onerror();
+        }
+    });
+}
+
+// ================================================================
+
+/**
+ * Toggles folder content visibility and refreshes Masonry layout.
+ */
 function toggleFolderDisplay(folderTitle, folderContent) {
     const isVisible = folderContent.style.display === 'none';
     folderContent.style.display = isVisible ? 'block' : 'none';
     folderTitle.querySelector('.folder-toggle').classList.toggle('folder-open', isVisible);
-    
-    setTimeout(updateMasonryLayout, 50); 
+    setTimeout(updateMasonryLayout, 50);
 }
 
-// Function to trigger a re-layout of Masonry
+/**
+ * Triggers a Masonry layout recalculation.
+ */
 function updateMasonryLayout() {
     if (msnry) {
         msnry.layout();
     }
 }
 
-// Generates HTML for bookmarks based on the node structure
+/**
+ * Recursively builds HTML for bookmark nodes (folders and links).
+ * Folders named "sep" (case-insensitive) render as visual separators.
+ */
 function createBookmarksHtml(bookmarkNodes, title = '') {
     let html = title ? `<h2>${title}</h2>` : '';
     html += '<ul>';
     for (const node of bookmarkNodes) {
         if (node.children) {
-            // ===== CHECK FOR SEPARATOR FOLDER =====
             if (node.title.toLowerCase().trim() === 'sep') {
                 html += `<li class="separator"><hr></li>`;
             } else {
-                html += `<li class="folder-title">` +
-                        `<img class="folder-icon" src="icons/favicons/folder.png" alt="Folder">` +
-                        `<span class="toggle-folder">${node.title}</span>` +
-                        `<span class="folder-toggle">&#9660;</span>` +
-                        `</li>`;
-                html += `<ul class="folder-content" style="display: none;">` +
-                        `${createBookmarksHtml(node.children)}` +
-                        `</ul>`;
+                html += `<li class="folder-title">`
+                    + `<img class="folder-icon" src="icons/favicons/folder.png" alt="Folder">`
+                    + `<span class="toggle-folder">${node.title}</span>`
+                    + `<span class="folder-toggle">&#9660;</span>`
+                    + `</li>`;
+                html += `<ul class="folder-content" style="display: none;">`
+                    + `${createBookmarksHtml(node.children)}`
+                    + `</ul>`;
             }
         } else {
             html += createFaviconHtml(node);
@@ -189,16 +207,28 @@ function createBookmarksHtml(bookmarkNodes, title = '') {
     return html;
 }
 
-// Generates favicon HTML for a bookmark node
+/**
+ * Builds HTML for a single bookmark with its favicon image.
+ *
+ * Priority:
+ *   1. Custom local icons for known domains (switch/case)
+ *   2. DuckDuckGo favicon API (default, no redirects = no CORS)
+ *
+ * If DuckDuckGo has no icon, the browser shows its default broken image.
+ */
 function createFaviconHtml(node) {
-    if (!node.url) return `<li>⚠️ <span class="bookmark-title">${node.title || "Sans titre"}</span></li>`;
-    
+    if (!node.url) {
+        return `<li>⚠️ <span class="bookmark-title">${node.title || "Untitled"}</span></li>`;
+    }
+
     try {
         const urlObj = new URL(node.url);
         const domain = urlObj.hostname.replace(/^www\./, '');
+        const formattedTitle = formatTitle(node.title, node.url);
+
         let faviconUrl;
-        let fallbackUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
-        
+        let isCustom = true;
+
         switch (domain) {
             case 'cse-corsicasole.com':
                 faviconUrl = 'icons/favicons/cse.ico';
@@ -224,35 +254,30 @@ function createFaviconHtml(node) {
                 }
                 break;
             default:
-                faviconUrl = fallbackUrl;
+                faviconUrl = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+                isCustom = false;
         }
 
-        const formattedTitle = formatTitle(node.title, node.url);
+        const faviconClass = isCustom ? 'favicon custom-favicon' : 'favicon';
 
-        if (faviconUrl !== fallbackUrl) {
-            return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
-                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" 
-                onerror="this.src='${fallbackUrl}'">
-                <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
-        } else {
-            return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
-                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
-                <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
-        }
+        return `<li><img class="${faviconClass}" data-domain="${domain}" src="${faviconUrl}" alt="${formattedTitle}" 
+            style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
+            <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${formattedTitle}</a></li>`;
     } catch (error) {
-        console.error("Error processing bookmark URL:", node.url, error);
+        console.error('Error processing bookmark URL:', node.url, error);
         return `<li>🔗 <a href="${node.url}" target="_blank" title="${node.title}" class="bookmark-title">${node.title || node.url}</a></li>`;
     }
 }
 
-// Formats the title of a bookmark for display
+/**
+ * Cleans up bookmark titles (removes Google Docs/Sheets/Slides suffixes).
+ */
 function formatTitle(title, url) {
     if (typeof url !== 'string' || !url.trim()) {
         return title;
     }
-    if (url.includes("docs.google.com") || url.includes("sheets.google.com")) {
+    if (url.includes('docs.google.com') || url.includes('sheets.google.com')) {
         return title.replace(/\s*-\s*Google\s*(Docs|Sheets|Slides)/i, '').trim();
     }
-    const domain = new URL(url).hostname.replace('www.', '');
     return title;
 }
