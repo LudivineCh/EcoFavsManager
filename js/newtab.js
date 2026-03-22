@@ -233,10 +233,7 @@ function createFaviconHtml(node) {
             case 'cse-corsicasole.com':
                 faviconUrl = 'icons/favicons/cse.ico';
                 break;
-            case 'wrike.com':
-                faviconUrl = 'icons/favicons/wrike.png';
-                break;
-            case 'app.monportailrh.com':
+            case 'sso.monportailrh.com':
                 faviconUrl = 'icons/favicons/peoplesphere.png';
                 break;
             case 'armoires.zeendoc.com':

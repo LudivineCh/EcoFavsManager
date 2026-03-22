@@ -3,8 +3,15 @@ body {
     color: #0a0a0a;
     margin: 0;
     padding: 20px;
-    /*background-color: #f4f4f4;  /* Light grey*/
-    background-color: #2e2e2e; /* Dark grey*/
+    /*background-color: #f4f4f4; /* Light grey */
+    /*background-color: #2e2e2e; /* Dark grey */
+    /*background-color: #7A6558; /* Warm taupe brown */
+    /*background-color: #FEFCF3; /* Very light beige */
+    /*background-color: #E0DCD5; /* Light greige */
+    /*background-color: #7A7A5A; /* Soft khaki */
+    background-color: #8B8B6E; /* Light khaki */
+    /*background-color: #AA7E58; /* Soft amber */
+
     /*background-image: url('../img/univers.png');*/
     background-size: cover !important;
     background-position: center !important;
