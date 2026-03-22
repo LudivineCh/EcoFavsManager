@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .encart {
                     max-width: 100%;
                     box-sizing: border-box;
+                    margin-bottom: 15px !important;
                 }
                 @media (max-width: 1200px) {
                     #masonryContainer .encart { width: 180px; }
@@ -95,20 +96,26 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const optimalColumnWidth = calculateOptimalColumnWidth();
-
+            // Force la largeur des encarts à correspondre au columnWidth
+            document.querySelectorAll('#masonryContainer .encart').forEach(function(el) {
+                el.style.width = optimalColumnWidth + 'px';
+            });
             msnry = new Masonry('#masonryContainer', {
                 itemSelector: '.encart',
                 columnWidth: optimalColumnWidth,
                 gutter: 15,
                 fitWidth: false,
-                percentPosition: true,
+                percentPosition: false,
                 horizontalOrder: true,
-                transitionDuration: '0.2s'
+                transitionDuration: '0.2s',
             });
 
             window.addEventListener('resize', function () {
                 if (msnry) {
                     const newOptimalWidth = calculateOptimalColumnWidth();
+                    document.querySelectorAll('#masonryContainer .encart').forEach(function(el) {
+                        el.style.width = newOptimalWidth + 'px';
+                    });
                     msnry.options.columnWidth = newOptimalWidth;
                     msnry.layout();
                 }
