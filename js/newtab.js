@@ -11,7 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let barreDeFavorisLinksHtml = '<ul>';
         for (const item of barreDeFavoris.children) {
             if (item.children) {
-                bookmarksHtml += `<div class="encart"><h2>${item.title}</h2>` + createBookmarksHtml(item.children) + '</div>';
+                // ===== CHECK FOR SEPARATOR FOLDER =====
+                if (item.title.toLowerCase().trim() === 'sep') {
+                    bookmarksHtml += `<div class="encart separator-encart"><hr class="separator-line"></div>`;
+                } else {
+                    bookmarksHtml += `<div class="encart"><h2>${item.title}</h2>` + createBookmarksHtml(item.children) + '</div>';
+                }
             } else {
                 barreDeFavorisLinksHtml += createFaviconHtml(item);
             }
@@ -35,16 +40,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     align-items: flex-start;
                     width: 100%;
                     box-sizing: border-box;
-                    padding-right: 15px; /* To prevent content from going to the edge */
-                    overflow-x: hidden; /* Prevent horizontal scrolling */
+                    padding-right: 15px;
+                    overflow-x: hidden;
                 }
                 
                 #specialContainer {
                     display: flex;
                     flex-direction: column;
                     margin-right: 15px;
-                    flex-shrink: 0; /* Prevent the special container from shrinking */
-                    width: auto; /* Width based on content */
+                    flex-shrink: 0;
+                    width: auto;
                 }
                 
                 #masonryContainer {
@@ -52,22 +57,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     box-sizing: border-box;
                 }
                 
-                /* Ensure that sections don't overflow their container */
                 .encart {
                     max-width: 100%;
                     box-sizing: border-box;
                 }
                 
-                /* Responsive adjustments */
                 @media (max-width: 1200px) {
                     #masonryContainer .encart {
-                        width: 180px; /* Slightly reduce the width of sections */
+                        width: 180px;
                     }
                 }
                 
                 @media (max-width: 992px) {
                     #masonryContainer .encart {
-                        width: 160px; /* Further reduce for smaller screens */
+                        width: 160px;
                     }
                 }
             </style>
@@ -99,44 +102,34 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize Masonry with enhanced options
         setTimeout(function() {
-            // Calculate the optimal number of columns based on available space
             function calculateOptimalColumnWidth() {
                 const containerWidth = masonryContainer.clientWidth;
-                const minColumnWidth = 200; // Minimum desired width for a column
+                const minColumnWidth = 200;
                 const maxColumns = Math.floor(containerWidth / minColumnWidth);
                 
-                // If there's space for at least 1 column
                 if (maxColumns >= 1) {
-                    // Distribute available space evenly
-                    return Math.floor(containerWidth / maxColumns) - 15; // Subtract gutter space
+                    return Math.floor(containerWidth / maxColumns) - 15;
                 }
                 
-                return minColumnWidth; // Fallback to minimum width
+                return minColumnWidth;
             }
             
-            // Initialize Masonry with calculated column width
             const optimalColumnWidth = calculateOptimalColumnWidth();
             
             msnry = new Masonry('#masonryContainer', {
                 itemSelector: '.encart',
                 columnWidth: optimalColumnWidth,
                 gutter: 15,
-                fitWidth: false, // Don't use fitWidth because we want to occupy all space
-                percentPosition: true, // Use relative positioning for better adaptation
-                horizontalOrder: true, // So that elements are organized from left to right
-                transitionDuration: '0.2s' // Smooth animation during rearrangement
+                fitWidth: false,
+                percentPosition: true,
+                horizontalOrder: true,
+                transitionDuration: '0.2s'
             });
             
-            // Recalculate layout when resizing the window
             window.addEventListener('resize', function() {
                 if (msnry) {
-                    // Re-calculate optimal column width
                     const newOptimalWidth = calculateOptimalColumnWidth();
-                    
-                    // Update Masonry options
                     msnry.options.columnWidth = newOptimalWidth;
-                    
-                    // Reload the layout
                     msnry.layout();
                 }
             });
@@ -159,7 +152,6 @@ function toggleFolderDisplay(folderTitle, folderContent) {
     folderContent.style.display = isVisible ? 'block' : 'none';
     folderTitle.querySelector('.folder-toggle').classList.toggle('folder-open', isVisible);
     
-    // Update Masonry layout after a short delay
     setTimeout(updateMasonryLayout, 50); 
 }
 
@@ -176,14 +168,19 @@ function createBookmarksHtml(bookmarkNodes, title = '') {
     html += '<ul>';
     for (const node of bookmarkNodes) {
         if (node.children) {
-            html += `<li class="folder-title">` +
-                    `<img class="folder-icon" src="icons/favicons/folder.png" alt="Folder">` +
-                    `<span class="toggle-folder">${node.title}</span>` +
-                    `<span class="folder-toggle">&#9660;</span>` +
-                    `</li>`;
-            html += `<ul class="folder-content" style="display: none;">` +
-                    `${createBookmarksHtml(node.children)}` +
-                    `</ul>`;
+            // ===== CHECK FOR SEPARATOR FOLDER =====
+            if (node.title.toLowerCase().trim() === 'sep') {
+                html += `<li class="separator"><hr></li>`;
+            } else {
+                html += `<li class="folder-title">` +
+                        `<img class="folder-icon" src="icons/favicons/folder.png" alt="Folder">` +
+                        `<span class="toggle-folder">${node.title}</span>` +
+                        `<span class="folder-toggle">&#9660;</span>` +
+                        `</li>`;
+                html += `<ul class="folder-content" style="display: none;">` +
+                        `${createBookmarksHtml(node.children)}` +
+                        `</ul>`;
+            }
         } else {
             html += createFaviconHtml(node);
         }
@@ -202,7 +199,6 @@ function createFaviconHtml(node) {
         let faviconUrl;
         let fallbackUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
         
-        // Determining the favicon URL based on the domain
         switch (domain) {
             case 'cse-corsicasole.com':
                 faviconUrl = 'icons/favicons/cse.ico';
@@ -228,15 +224,11 @@ function createFaviconHtml(node) {
                 }
                 break;
             default:
-                // For other sites, directly use the Google S2 service
                 faviconUrl = fallbackUrl;
         }
 
-        // Formatting the title for display
         const formattedTitle = formatTitle(node.title, node.url);
 
-        // Creating the HTML element for the favicon with the formatted title
-        // If it's a custom URL, add error handling, otherwise directly use the Google S2 service
         if (faviconUrl !== fallbackUrl) {
             return `<li><img class="favicon" src="${faviconUrl}" alt="${formattedTitle}" 
                 style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;" 
