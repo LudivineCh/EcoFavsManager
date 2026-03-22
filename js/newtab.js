@@ -191,7 +191,7 @@ function createBookmarksHtml(bookmarkNodes, title = '') {
                 html += `<li class="separator"><hr></li>`;
             } else {
                 html += `<li class="folder-title">`
-                    + `<img class="folder-icon" src="icons/favicons/folder.png" alt="Folder">`
+                    + `<img class="folder-icon" src="img/favicons/folder.png" alt="Folder">`
                     + `<span class="toggle-folder">${node.title}</span>`
                     + `<span class="folder-toggle">&#9660;</span>`
                     + `</li>`;
@@ -231,23 +231,23 @@ function createFaviconHtml(node) {
 
         switch (domain) {
             case 'cse-corsicasole.com':
-                faviconUrl = 'icons/favicons/cse.ico';
+                faviconUrl = 'img/favicons/cse.ico';
                 break;
             case 'sso.monportailrh.com':
-                faviconUrl = 'icons/favicons/peoplesphere.png';
+                faviconUrl = 'img/favicons/peoplesphere.png';
                 break;
             case 'armoires.zeendoc.com':
-                faviconUrl = 'icons/favicons/zeendoc.ico';
+                faviconUrl = 'img/favicons/zeendoc.ico';
                 break;
             case 'docs.google.com':
                 if (urlObj.pathname.startsWith('/document')) {
-                    faviconUrl = 'icons/favicons/google-docs.png';
+                    faviconUrl = 'img/favicons/google-docs.png';
                 } else if (urlObj.pathname.startsWith('/spreadsheets')) {
-                    faviconUrl = 'icons/favicons/google-sheets.png';
+                    faviconUrl = 'img/favicons/google-sheets.png';
                 } else if (urlObj.pathname.startsWith('/presentation')) {
-                    faviconUrl = 'icons/favicons/google-slides.png';
+                    faviconUrl = 'img/favicons/google-slides.png';
                 } else {
-                    faviconUrl = 'icons/favicons/google-drive.png';
+                    faviconUrl = 'img/favicons/google-drive.png';
                 }
                 break;
             default:
